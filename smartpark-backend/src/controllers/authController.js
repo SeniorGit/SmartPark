@@ -15,8 +15,8 @@ exports.register = async (req, res)=>{
         }
         const {first_name, last_name, phone_number, email, password} = value
 
-        const user = await db('users').where('email', email).first();
-        if(!user){
+        const existingUser  = await db('users').where('email', email).first();
+        if(existingUser){
             return res.status(400).json({
                 success:false,
                 message: 'Email already registered'
