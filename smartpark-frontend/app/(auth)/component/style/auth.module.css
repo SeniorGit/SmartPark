@@ -1,0 +1,58 @@
+/* /styles/layouts/auth.module.css */
+.container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 1rem;
+}
+
+.authCard {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 440px;
+  overflow: hidden;
+}
+
+.header {
+  padding: 2rem 2rem 1rem;
+  text-align: center;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.title {
+  color: #333;
+  font-size: 1.75rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.subtitle {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.footer {
+  padding: 1.5rem 2rem;
+  text-align: center;
+  border-top: 1px solid #e5e5e5;
+  background: #f8f9fa;
+}
+
+.footerText {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.footerLink {
+  color: #667eea;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.footerLink:hover {
+  text-decoration: underline;
+}
