@@ -1,12 +1,12 @@
-import { BuildingDetailsResponse, CreateFloorRequest, CreateFloorResponse } from '@/types/building';
+import { Building, CreateBuildingData, UpdateBuildingData } from '@/types/adminDash';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-export const buildingService = {
-  // Get all floors in building
-  async getFloorsByBuilding(buildingId: string): Promise<BuildingDetailsResponse> {
+export const BuildingService = {
+  // Get all buildings
+  async getAllBuildings() {
     const token = localStorage.getItem('token');
-    const response = await fetch(`${API_URL}/admin/buildings/${buildingId}/floors`, {
+    const response = await fetch(`${API_URL}/api/admin/buildings`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -15,35 +15,81 @@ export const buildingService = {
     });
 
     if (!response.ok) {
-      throw new Error('Failed to fetch floors');
+      throw new Error('Failed to fetch buildings');
     }
 
-    return response.json();
+    const result = await response.json();
+    
+    return result;
   },
 
-  // Create new floor
-  async createFloor(buildingId: string, data: CreateFloorRequest): Promise<CreateFloorResponse> {
+  // Create new building
+  async createBuilding(buildingData: CreateBuildingData): Promise<Building> {
+    // take token from local storage
     const token = localStorage.getItem('token');
-    const response = await fetch(`${API_URL}/admin/buildings/${buildingId}/floors`, {
+
+    // post data from form
+    const response = await fetch(`${API_URL}/admin/buildings`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(data),
+      body: JSON.stringify(buildingData),
+    });
+    // if failed post data
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => null);
+      throw new Error(errorData?.message || 'Failed to create building');
+    }
+
+    const result = await response.json();
+    
+    if (result.success && result.data) {
+      return result.data;
+    } else if (result.success && Array.isArray(result.data) && result.data.length > 0) {
+      // Handle returning array format
+      return result.data[0];
+    } else {
+      throw new Error('Invalid response format after creation');
+    }
+  },
+
+  // Update building
+  async updateBuilding(buildingId: string, buildingData: UpdateBuildingData): Promise<Building> {
+    const token = localStorage.getItem('token');
+    const response = await fetch(`${API_URL}/admin/buildings/${buildingId}`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(buildingData),
     });
 
     if (!response.ok) {
-      throw new Error('Failed to create floor');
+      const errorData = await response.json().catch(() => null);
+      throw new Error(errorData?.message || 'Failed to update building');
     }
 
-    return response.json();
+    const result = await response.json();
+    
+    if (result.success) {
+      // Jika backend tidak return updated data, kita return data yang di-update
+      return {
+        id: buildingId,
+        ...buildingData,
+        // Field lainnya akan di-handle oleh optimistic update di component
+      } as Building;
+    } else {
+      throw new Error(result.message || 'Failed to update building');
+    }
   },
 
-  // Delete floor
-  async deleteFloor(buildingId: string, floorNumber: number): Promise<void> {
+  // Delete building
+  async deleteBuilding(buildingId: string): Promise<void> {
     const token = localStorage.getItem('token');
-    const response = await fetch(`${API_URL}/admin/buildings/${buildingId}/floors/${floorNumber}`, {
+    const response = await fetch(`${API_URL}/admin/buildings/${buildingId}`, {
       method: 'DELETE',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -51,7 +97,14 @@ export const buildingService = {
     });
 
     if (!response.ok) {
-      throw new Error('Failed to delete floor');
+      const errorData = await response.json().catch(() => null);
+      throw new Error(errorData?.message || 'Failed to delete building');
+    }
+
+    const result = await response.json();
+    
+    if (!result.success) {
+      throw new Error(result.message || 'Failed to delete building');
     }
   },
 };

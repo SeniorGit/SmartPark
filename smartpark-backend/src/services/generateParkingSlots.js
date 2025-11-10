@@ -1,6 +1,6 @@
 const db = require('../lib/utils/database')
 
-const generateParkingSlots = async (building_id, total_floors, slots_per_floor=20)=>{
+const generateParkingSlots = async (building_id, total_floors, slots_per_floor=10)=>{
     const slots = [];
 
     for(let floor = 1; floor<= total_floors; floor++){
@@ -16,7 +16,7 @@ const generateParkingSlots = async (building_id, total_floors, slots_per_floor=2
     }
 
     await db('parking_slots').insert(slots);
-    return slots.length
+    return {floor: total_floors, slots: slots.length};
 }
 
 module.exports = {generateParkingSlots};

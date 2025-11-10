@@ -1,27 +1,53 @@
 const db = require('../lib/utils/database')
-const {generateParkingSlots} = require('../services/generateParkingSlots')
-const {createdLotsAdmins, updateLotsAdmins} = require('../lib/validator/adminLotsForms')
+const {validationResult, body} = require('express-validator')
 
-exports.create_lots = async (req, res) => {
+// show all data park buildings
+exports.showAllParkingLot = async (req, res) => {
     try{
-        const {error, value} = createdLotsAdmins.body.validate(req.body)
-        if(error){
+        const lots = await db('buildings').select('id', 'name', 'address', 'total_floors');
+        return res.status(200).json({
+            success: true,
+            message: 'Getting all data successfuly',
+            data: {
+                user: lots
+            }
+        })
+    }catch(error){
+        console.error(error);
+        return res.status(500).json({
+            success: false, 
+            message: 'Internal server error during getting all lots data'
+        })
+    }
+}
+
+// create parking building
+exports.createParkingLots = async (req, res) => {
+    try{
+        // validation user input
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
             return res.status(400).json({
                 success: false,
-                message: error.details.map(err => err.message)
-            })
+                message: 'Validation failed',
+                errors: errors.array().map(error => ({
+                field: error.path,
+                message: error.msg
+                }))
+            });
         }
-        const {name, address, total_floors} = value
+
+        // get input and creating new buildings data
+        const {name, address, total_floors} = req.body
         const [createLots] = await db('buildings').insert({
             name: name,
             address: address,
             total_floors: total_floors
         }).returning(['id', 'name', 'address', 'total_floors', 'created_at'])
 
-        const slotCount = await generateParkingSlots(createLots.id, createLots.total_floors);
         return res.status(201).json({
             success: true,
-            message: `Parking lots at ${createLots.name} successful created with ${slotCount} `,
+            message: `Parking lots at ${createLots.name} successful created`,
             data: {
                 user: createLots
             }
@@ -35,59 +61,25 @@ exports.create_lots = async (req, res) => {
     }
 }
 
-
-exports.all_lots_data = async (req, res) => {
+exports.updateParkingLots = async (req, res) => {
     try{
-        const lots = await db('buildings').select('*');
-        const slots_avaibility = await Promise.all(
-            lots.map(async (lot) =>{
-                const total_slots = await db('parkings_slots')
-                    .where('building_id', lot.id)
-                    .count(' * as total');
-                
-                const availableResult = await db('parking_slot')
-                .where({
-                    building_id: lot.id,
-                    status: 'AVAILABLE'
-                })
-                .count('* as available');
-
-                return {
-                    id: lot.id,
-                    name: lot.name,
-                    address: lot.address,
-                    total_floors: parseInt(total_slots[0].total),
-                    available_slots: parseInt(availableResult[0].available)
-                };
-            })
-        );
-        
-        return res.status(200).json({
-            success: true,
-            message: 'Getting all data successfuly',
-            data: slots_avaibility
-        })
-    }catch(error){
-        console.error(error);
-        return res.status(500).json({
-            success: false, 
-            message: 'Internal server error during getting all lots data'
-        })
-    }
-}
-
-exports.update_lots = async (req, res) => {
-    try{
+        // validation
         const id = req.params.id;
-        const {error, value} = updateLotsAdmins.body.validate(req.body)
-        if(error){
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
             return res.status(400).json({
                 success: false,
-                message: error.details.map(err => err.message)
-            })
+                message: 'Validation failed',
+                errors: errors.array().map(error => ({
+                field: error.path,
+                message: error.msg
+                }))
+            });
         }
-        const {name, address} = value
+        // get name and address
+        const {name, address, total_floors} = req.body
 
+        // get Id and check it
         const isID = await db('buildings').where('id', id).first();
         if(!isID){
             return res.status(404).json({
@@ -96,11 +88,13 @@ exports.update_lots = async (req, res) => {
             })
         }
 
+        // update builings data
         const updateLots = await db('buildings')
         .where('id', id)
         .update({
             name: name,
             address: address,
+            total_floors: total_floors,
             updated_at: new Date()
         })
         .returning(['id', 'name', 'address', 'updated_at']);
@@ -109,8 +103,6 @@ exports.update_lots = async (req, res) => {
             success: true,
             message: `Updated at ${updateLots.name} successfuly`
         })
-        
-
     }catch(error){
         console.error(error);
         return res.status(500).json({
@@ -120,8 +112,9 @@ exports.update_lots = async (req, res) => {
     }
 }
 
-exports.delete_lots = async (req, res) => {
+exports.deleteParkingLots = async (req, res) => {
     try{
+        // get id and check if Id exist
         const id = req.params.id;
         const isID = await db('buildings').where('id', id).first();
         if(!isID){
@@ -130,11 +123,13 @@ exports.delete_lots = async (req, res) => {
                 message: 'Lots not found'
             })
         }
+
+        // delete builings rows
         await db('buildings').where('id', id).del()
 
         return res.status(201).json({
             success: true,
-            message: `lots ${building.name} deleted successfully`
+            message: `lots ${isID.name} deleted successfully`
         })
     }catch(error){
         console.error(error);

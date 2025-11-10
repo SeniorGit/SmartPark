@@ -7,7 +7,7 @@ exports.seed = async function(knex) {
 
   // Hash password
   const adminPassword = await hashPasword('Admin1234');
-  const userPassword = await hashPasword('user123');
+  const userPassword = await hashPasword('User1234');
 
   // Insert users
   await knex('users').insert([
@@ -34,8 +34,4 @@ exports.seed = async function(knex) {
       updated_at: new Date()
     }
   ]);
-
-  console.log('Initial users created:');
-  console.log('Admin: admin@smartpark.com / admin123');
-  console.log('User:  user@smartpark.com / user123');
 };
