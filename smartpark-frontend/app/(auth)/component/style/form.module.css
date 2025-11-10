@@ -1,0 +1,61 @@
+/* /styles/components/form.module.css */
+.form {
+  padding: 2rem;
+}
+
+.formGroup {
+  margin-bottom: 1.5rem;
+}
+
+.label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #333;
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.helpers {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  font-size: 0.9rem;
+}
+
+.rememberMe {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #666;
+  cursor: pointer;
+}
+
+.forgotPassword {
+  color: #667eea;
+  text-decoration: none;
+}
+
+.forgotPassword:hover {
+  text-decoration: underline;
+}
+
+.errorAlert {
+  background: #fed7d7;
+  color: #c53030;
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  margin-bottom: 1.5rem;
+  font-size: 0.9rem;
+  border: 1px solid #feb2b2;
+}
+
+.successAlert {
+  background: #c6f6d5;
+  color: #2d5016;
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  margin-bottom: 1.5rem;
+  font-size: 0.9rem;
+  border: 1px solid #9ae6b4;
+}

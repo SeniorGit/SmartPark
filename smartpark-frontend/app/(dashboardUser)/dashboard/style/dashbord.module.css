@@ -1,0 +1,385 @@
+/* Main Container */
+.container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Header Styles */
+.header {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  padding: 20px 0;
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+}
+
+.headerContent {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.welcomeSection {
+  flex: 1;
+}
+
+.welcomeTitle {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0 0 4px 0;
+}
+
+.welcomeSubtitle {
+  font-size: 16px;
+  color: #64748b;
+  margin: 0;
+}
+
+.userSection {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.userInfo {
+  text-align: right;
+}
+
+.userName {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0;
+}
+
+.userRole {
+  font-size: 14px;
+  color: #64748b;
+  margin: 0;
+  text-transform: capitalize;
+}
+
+.logoutButton {
+  background: #ef4444;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.logoutButton:hover {
+  background: #dc2626;
+  transform: translateY(-2px);
+}
+
+/* Main Content */
+.main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+/* Error State */
+.errorContainer {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  padding: 20px;
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.errorText {
+  color: #dc2626;
+  font-size: 16px;
+  margin-bottom: 16px;
+}
+
+.retryButton {
+  background: #3b82f6;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.retryButton:hover {
+  background: #2563eb;
+}
+
+/* Page Header */
+.pageHeader {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.pageTitle {
+  font-size: 32px;
+  font-weight: 700;
+  color: white;
+  margin: 0 0 8px 0;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.pageSubtitle {
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.8);
+  margin: 0;
+}
+
+/* Loading State */
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 60px 20px;
+}
+
+.loadingSpinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  border-top: 4px solid white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 16px;
+}
+
+.loadingText {
+  color: white;
+  font-size: 16px;
+  margin: 0;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Buildings Grid */
+.buildingsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 24px;
+}
+
+/* Building Card */
+.buildingCard {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.buildingCard:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+}
+
+.buildingCard::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #667eea, #764ba2);
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.buildingName {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0;
+  flex: 1;
+}
+
+.availabilityBadge {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-left: 12px;
+}
+
+.availabilityBadge.available {
+  background: #dcfce7;
+  color: #166534;
+  border: 1px solid #bbf7d0;
+}
+
+.availabilityBadge.low {
+  background: #fef3c7;
+  color: #92400e;
+  border: 1px solid #fde68a;
+}
+
+.availabilityBadge.full {
+  background: #fecaca;
+  color: #dc2626;
+  border: 1px solid #fca5a5;
+}
+
+.cardBody {
+  space-y: 16px;
+}
+
+.buildingAddress {
+  color: #64748b;
+  font-size: 14px;
+  margin: 0 0 16px 0;
+  line-height: 1.5;
+}
+
+.parkingInfo {
+  background: #f8fafc;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.infoItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+}
+
+.infoItem:not(:last-child) {
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.infoLabel {
+  color: #64748b;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.infoValue {
+  color: #1e293b;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.availabilityBar {
+  width: 100%;
+  height: 6px;
+  background: #e2e8f0;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.availabilityFill {
+  height: 100%;
+  background: linear-gradient(90deg, #10b981, #059669);
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+/* Empty State */
+.emptyState {
+  text-align: center;
+  padding: 60px 20px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+}
+
+.emptyIcon {
+  font-size: 64px;
+  margin-bottom: 16px;
+  opacity: 0.7;
+}
+
+.emptyTitle {
+  font-size: 24px;
+  font-weight: 600;
+  color: white;
+  margin: 0 0 12px 0;
+}
+
+.emptyDescription {
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.8);
+  margin: 0;
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.5;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .headerContent {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .userSection {
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .userInfo {
+    text-align: center;
+  }
+  
+  .welcomeTitle {
+    font-size: 24px;
+  }
+  
+  .pageTitle {
+    font-size: 28px;
+  }
+  
+  .buildingsGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .cardHeader {
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .availabilityBadge {
+    align-self: flex-start;
+    margin-left: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .main {
+    padding: 20px 15px;
+  }
+  
+  .buildingCard {
+    padding: 20px;
+  }
+}

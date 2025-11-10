@@ -1,20 +1,22 @@
-const {registerValidator} = require('../lib/validator/registerValidator')
-const {loginValidator} = require('../lib/validator/loginValidator')
 const {hashPasword, comparePassword} = require('../lib/utils/password')
 const {generateToken} = require('../lib/utils/jwtUtils')
 const db = require('../lib/utils/database')
-
+const {validationResult} = require('express-validator')
 exports.register = async (req, res)=>{
     try{
-        const { error, value } = registerValidator.body.validate(req.body);
-        if(error){
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
             return res.status(400).json({
                 success: false,
-                message: error.details.map(err => err.message)
-            })
+                message: 'Validation failed',
+                errors: errors.array().map(error => ({
+                field: error.path,
+                message: error.msg
+                }))
+            });
         }
-        const {first_name, last_name, phone_number, email, password} = value
-
+        const {first_name, last_name, phone_number, email, password} = req.body
+        
         const existingUser  = await db('users').where('email', email).first();
         if(existingUser){
             return res.status(400).json({
@@ -32,7 +34,7 @@ exports.register = async (req, res)=>{
             last_name: last_name,
             phone_number: phone_number
         }).returning(['id', 'email', 'first_name', 'last_name', 'phone_number', 'created_at'])
-
+        
         res.status(201).json({
             success:true,
             message: 'User registration successful', 
@@ -51,16 +53,19 @@ exports.register = async (req, res)=>{
 
 exports.login = async (req, res) => {
     try{
-        const {error, value} = loginValidator.body.validate(req.body);
-
-        if(error){
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
             return res.status(400).json({
                 success: false,
-                message: error.details.map(err => err.message)
-            })
+                message: 'Validation failed',
+                errors: errors.array().map(error => ({
+                field: error.path,
+                message: error.msg
+                }))
+            });
         }
         
-        const {email, password} = value
+        const {email, password} = req.body
         const user = await db('users').where('email', email).first();
         if(!user){
             return res.status(401).json({

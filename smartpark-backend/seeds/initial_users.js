@@ -6,7 +6,7 @@ exports.seed = async function(knex) {
   await knex('users').del();
 
   // Hash password
-  const adminPassword = await hashPasword('admin123');
+  const adminPassword = await hashPasword('Admin1234');
   const userPassword = await hashPasword('user123');
 
   // Insert users

@@ -1,0 +1,19 @@
+/* /app/auth/register/styles/register.module.css */
+.nameRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.nameField {
+  display: flex;
+  flex-direction: column;
+}
+
+.passwordHint {
+  color: #666;
+  font-size: 0.8rem;
+  margin-top: 0.25rem;
+  font-style: italic;
+}

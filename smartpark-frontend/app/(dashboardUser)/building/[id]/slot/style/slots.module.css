@@ -1,0 +1,442 @@
+/* Main Container */
+.container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Header Styles */
+.header {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  padding: 20px 0;
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+}
+
+.headerContent {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.backButton {
+  background: #3b82f6;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.backButton:hover {
+  background: #2563eb;
+  transform: translateY(-2px);
+}
+
+.buildingInfo {
+  flex: 1;
+}
+
+.buildingName {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0 0 4px 0;
+}
+
+.floorInfo {
+  font-size: 16px;
+  color: #64748b;
+  margin: 0;
+}
+
+/* Main Content */
+.main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+/* Loading States */
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 60vh;
+  text-align: center;
+}
+
+.loadingSpinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  border-top: 4px solid white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 16px;
+}
+
+.loadingText {
+  color: white;
+  font-size: 16px;
+  margin: 0;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Error States */
+.errorContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 60vh;
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.errorIcon {
+  font-size: 48px;
+  margin-bottom: 16px;
+}
+
+.errorText {
+  font-size: 18px;
+  color: white;
+  margin-bottom: 24px;
+  max-width: 400px;
+}
+
+.errorActions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.retryButton {
+  background: #3b82f6;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.retryButton:hover {
+  background: #2563eb;
+  transform: translateY(-2px);
+}
+
+/* Summary Section */
+.summarySection {
+  margin-bottom: 40px;
+}
+
+.summaryCard {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  padding: 30px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.summaryTitle {
+  font-size: 24px;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0 0 24px 0;
+  text-align: center;
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+}
+
+.statItem {
+  text-align: center;
+  padding: 20px;
+  background: #f8fafc;
+  border-radius: 8px;
+  transition: transform 0.3s ease;
+  border: 2px solid transparent;
+}
+
+.statItem:hover {
+  transform: translateY(-4px);
+}
+
+.statItem.statAvailable {
+  border-color: #10b981;
+  background: #f0fdf4;
+}
+
+.statItem.statOccupied {
+  border-color: #ef4444;
+  background: #fef2f2;
+}
+
+.statNumber {
+  font-size: 32px;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 8px;
+}
+
+.statItem.statAvailable .statNumber {
+  color: #059669;
+}
+
+.statItem.statOccupied .statNumber {
+  color: #dc2626;
+}
+
+.statLabel {
+  font-size: 14px;
+  color: #64748b;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Slots Section */
+.slotsSection {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  padding: 30px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.slotsHeader {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.slotsTitle {
+  font-size: 24px;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0 0 8px 0;
+}
+
+.slotsSubtitle {
+  font-size: 16px;
+  color: #64748b;
+  margin: 0;
+}
+
+/* Slots Grid */
+.slotsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 16px;
+  margin-bottom: 30px;
+}
+
+/* Slot Card */
+.slotCard {
+  border-radius: 8px;
+  padding: 16px;
+  text-align: center;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 3px solid transparent;
+  cursor: default;
+}
+
+.slotCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+.slotAvailable {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+  border-color: #047857;
+}
+
+.slotOccupied {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: white;
+  border-color: #b91c1c;
+}
+
+.slotContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+.slotNumber {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.slotStatus {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  opacity: 0.9;
+}
+
+/* Legend */
+.legend {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  flex-wrap: wrap;
+  padding-top: 20px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.legendColor {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  border: 2px solid rgba(0, 0, 0, 0.1);
+}
+
+.legendAvailable {
+  background: linear-gradient(135deg, #10b981, #059669);
+}
+
+.legendOccupied {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+}
+
+/* Empty State */
+.emptyState {
+  text-align: center;
+  padding: 60px 20px;
+  background: #f8fafc;
+  border-radius: 8px;
+  border: 2px dashed #cbd5e1;
+  margin-bottom: 30px;
+}
+
+.emptyIcon {
+  font-size: 64px;
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+
+.emptyTitle {
+  font-size: 20px;
+  font-weight: 600;
+  color: #374151;
+  margin: 0 0 12px 0;
+}
+
+.emptyDescription {
+  font-size: 16px;
+  color: #64748b;
+  margin: 0;
+  max-width: 300px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.5;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .headerContent {
+    flex-direction: column;
+    text-align: center;
+    gap: 15px;
+  }
+  
+  .buildingName {
+    font-size: 24px;
+  }
+  
+  .statsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .slotsGrid {
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 12px;
+  }
+  
+  .legend {
+    flex-direction: column;
+    gap: 15px;
+    align-items: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .main {
+    padding: 20px 15px;
+  }
+  
+  .summaryCard,
+  .slotsSection {
+    padding: 20px;
+  }
+  
+  .statsGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .slotsGrid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+  
+  .slotCard {
+    padding: 12px;
+  }
+  
+  .slotNumber {
+    font-size: 14px;
+  }
+  
+  .slotStatus {
+    font-size: 10px;
+  }
+  
+  .errorActions {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .retryButton,
+  .backButton {
+    width: 100%;
+  }
+}
+
+@media (max-width: 360px) {
+  .slotsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
