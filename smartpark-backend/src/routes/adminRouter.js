@@ -1,7 +1,7 @@
 const express = require('express');
 const adminRouter = express.Router();
 const {authenticate, requireAdmin} = require('../middleware/auth');
-const adminController = require('../controllers/buildingsContoller');
+const adminBuilingsController = require('../controllers/buildingsContoller')
 const adminFloorController = require('../controllers/floorController');
 const adminSlotsController = require('../controllers/slotsController')
 
@@ -25,10 +25,10 @@ const adminSlotsController = require('../controllers/slotsController')
 
 
 // ===== BUILDINGS CRUD =====
-adminRouter.get('/buildings', adminController.all_lots_data);           // Get all buildings
-adminRouter.post('/buildings', adminController.create_lots);           // Create building
-adminRouter.put('/buildings/:id', adminController.update_lots);        // Update building
-adminRouter.delete('/buildings/:id', adminController.delete_lots);     // Delete building
+adminRouter.get('/buildings', adminBuilingsController.showAllParkingLot);           // Get all buildings
+adminRouter.post('/buildings', adminBuilingsController.createParkingLots);           // Create building
+adminRouter.put('/buildings/:id', adminBuilingsController.updateParkingLots);        // Update building
+adminRouter.delete('/buildings/:id',adminBuilingsController.deleteParkingLots);     // Delete building
 
 // ===== FLOORS MANAGEMENT =====
 adminRouter.get('/buildings/:id/floors', adminFloorController.get_floor_buildings);      // Get all floors in building

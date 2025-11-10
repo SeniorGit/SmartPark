@@ -21,7 +21,7 @@ export default function BuildingsTable({
   const router = useRouter();
 
   const handleDetailClick = (buildingId: string) => {
-    router.push(`/admin/buildings/${buildingId}`);
+    router.push(`/buildings/${buildingId}`);
   };
 
   if (isLoading) {

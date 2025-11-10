@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { Building, Floor } from '@/types/building';
-import { buildingService } from '@/lib/services/buildingService';
+import { buildingService } from '@/lib/services/floorService';
 import CreateFloorModal from './component/createFloor';
 import FloorCard from './component/floorCard';
 import styles from './style/building.module.css';

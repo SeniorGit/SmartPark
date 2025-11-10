@@ -4,7 +4,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Building, CreateBuildingData, UpdateBuildingData } from '@/types/adminDash';
-import { BuildingService } from '@/lib/services/AdminDashService';
+import { BuildingService } from '@/lib/services/buildingService';
 import BuildingsTable from './component/buildingTable';
 import CreateBuildingModal from './component/createBuilding';
 import UpdateBuildingModal from './component/updateBuilding';
@@ -102,7 +102,7 @@ export default function AdminDashboard() {
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
-    router.push('/auth/login');
+    router.push('/login');
   };
 
   return (
