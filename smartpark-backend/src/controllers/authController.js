@@ -2,8 +2,11 @@ const {hashPasword, comparePassword} = require('../lib/utils/password')
 const {generateToken} = require('../lib/utils/jwtUtils')
 const db = require('../lib/utils/database')
 const {validationResult} = require('express-validator')
+
+// register Logic
 exports.register = async (req, res)=>{
     try{
+        // validation input
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(400).json({
@@ -15,8 +18,9 @@ exports.register = async (req, res)=>{
                 }))
             });
         }
+
+        // get input and check if users is exist
         const {first_name, last_name, phone_number, email, password} = req.body
-        
         const existingUser  = await db('users').where('email', email).first();
         if(existingUser){
             return res.status(400).json({
@@ -25,8 +29,8 @@ exports.register = async (req, res)=>{
             })
         }
 
+        // hasing password and sending data to DB
         const hashingPassword = await hashPasword(password);
-
         const [newUser] = await db('users').insert({
             email, 
             password: hashingPassword,
@@ -35,7 +39,8 @@ exports.register = async (req, res)=>{
             phone_number: phone_number
         }).returning(['id', 'email', 'first_name', 'last_name', 'phone_number', 'created_at'])
         
-        res.status(201).json({
+        // sending data to user 
+        return res.status(201).json({
             success:true,
             message: 'User registration successful', 
             data: {
@@ -51,8 +56,10 @@ exports.register = async (req, res)=>{
     }
 }
 
+// login logic
 exports.login = async (req, res) => {
     try{
+        // validation for login input
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(400).json({
@@ -65,6 +72,7 @@ exports.login = async (req, res) => {
             });
         }
         
+        // get input and check if users is exist
         const {email, password} = req.body
         const user = await db('users').where('email', email).first();
         if(!user){
@@ -74,6 +82,7 @@ exports.login = async (req, res) => {
             })
         }
 
+        // comparing password input user and db
         const comparingPass = await comparePassword(password, user.password);
         if(!comparingPass){
             return res.status(401).json({
@@ -82,6 +91,7 @@ exports.login = async (req, res) => {
             })
         }
 
+        // generate token for auth
         const userRole = user.role;
         const token = generateToken({
             userId: user.id,
@@ -89,7 +99,8 @@ exports.login = async (req, res) => {
             role: userRole
         },)
 
-        res.status(200).json({
+        // sending data to user
+        return res.status(200).json({
             success: true,
             message: 'Login successful',
             data: {

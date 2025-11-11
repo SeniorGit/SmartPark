@@ -50,4 +50,18 @@ const updateLotsAdmins = {
       .withMessage('Total floors must be a number between 1 and 20')
   ]
 };
-module.exports = { createdLotsAdmins, updateLotsAdmins };
+
+const floorValidation = {
+  body: [
+    // Total floors 
+    body('floor_number')
+      .isInt({ min: -10, max: 100 }) 
+      .withMessage('Floor number must be an integer between -10 and 100'),
+
+    body('slots_count')
+        .isInt({ min: 1, max: 1000 })
+        .withMessage('Slots count must be between 1 and 1000')
+  ]
+};
+
+module.exports = { createdLotsAdmins, updateLotsAdmins, floorValidation };

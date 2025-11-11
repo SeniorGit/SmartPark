@@ -1,9 +1,12 @@
 const db = require('../lib/utils/database');
-exports.get_floor_buildings = async (req, res) => {
+const {validationResult} = require('express-validator')
+const {generateSlotsFloor, updateSlotsFloor, getFloorPrefix} = require('../services/generateParkingSlots')
+
+// show all floor in buildings
+exports.getAllFloors = async (req, res) => {
     try {
+        // check if id exist
         const id = req.params.id;
-        
-        // 1. Get building info
         const building = await db('buildings').where('id', id).first();
         if (!building) {
             return res.status(404).json({
@@ -12,23 +15,33 @@ exports.get_floor_buildings = async (req, res) => {
             });
         }
 
-        // 2. Get distinct floors dengan availability data (SINGLE QUERY - lebih efficient)
+        // take floor column
         const floorsData = await db('parking_slots')
             .select('floor')
-            .count('* as total_slots')
-            .sum(db.raw("CASE WHEN status = 'AVAILABLE' THEN 1 ELSE 0 END as available_slots"))
             .where('building_id', id)
             .groupBy('floor')
             .orderBy('floor');
 
-        // 3. Format response
-        const floors = floorsData.map(floor => ({
-            floor: floor.floor,
-            total_slots: parseInt(floor.total_slots),
-            available_slots: parseInt(floor.available_slots) || 0,
-            availability: `${parseInt(floor.available_slots) || 0}/${parseInt(floor.total_slots)}`
-        }));
+        // start counting total slots per floor
+        const floorWithSlotCount = await Promise.all(
+            floorsData.map(async (floor)=>{
+                const slotCount = await db('parking_slots')
+                        .where({
+                            building_id: id,
+                            floor: floor.floor
+                        })
+                        .count('* as total_slots')
+                        .first();
+                const prefix = getFloorPrefix(floor.floor);
+                return {
+                    floor: floor.floor,
+                    floor_prefix: prefix,
+                    total_slots: parseInt(slotCount.total_slots)
+                };
+            })
+        )
 
+        // sending response data
         return res.status(200).json({
             success: true,
             message: `Getting all floor data from ${building.name}`,
@@ -36,9 +49,9 @@ exports.get_floor_buildings = async (req, res) => {
                 building: {
                     id: building.id,
                     name: building.name,
-                    address: building.address
+                    address: building.address,
                 },
-                floors: floors
+                floors: floorWithSlotCount,
             }
         });
 
@@ -51,20 +64,21 @@ exports.get_floor_buildings = async (req, res) => {
     }
 };
 
-exports.create_floor_buildings = async (req, res) => {
+exports.createFloors = async (req, res) => {
     try {
-        const building_id = req.params.id;
-        const { floor_number, slots_count = 20 } = req.body;
-
-        // 1. Validasi input
-        if (!floor_number || !slots_count) {
+        // validation
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
             return res.status(400).json({
                 success: false,
-                message: 'Floor number and slots count are required'
+                message: 'Validation failed',
+                errors: errors.array()
             });
         }
-
-        // 2. Check if building exists
+        
+        // getting builings id and check if exist
+        const building_id = req.params.id;
+        const { floor_number, slots_count } = req.body;
         const building = await db('buildings').where('id', building_id).first();
         if (!building) {
             return res.status(404).json({
@@ -73,11 +87,10 @@ exports.create_floor_buildings = async (req, res) => {
             });
         }
 
-        // 3. Check if floor already exists
+        // check if floor is exist
         const existingFloor = await db('parking_slots')
             .where({ building_id, floor: floor_number })
             .first();
-            
         if (existingFloor) {
             return res.status(400).json({
                 success: false,
@@ -85,39 +98,19 @@ exports.create_floor_buildings = async (req, res) => {
             });
         }
 
-        // 4. Generate slot prefix berdasarkan floor number
-        const getFloorPrefix = (floor) => {
-            if (floor < 0) return `B${Math.abs(floor)}`; // Basement: B1, B2
-            if (floor === 1) return 'G';               // Ground floor: G
-            return `L${floor}`;                        // Upper floors: L2, L3
-        };
-
-        const prefix = getFloorPrefix(floor_number);
-        const slotsToInsert = [];
-
-        // 5. Generate parking slots
-        for (let i = 1; i <= slots_count; i++) {
-            slotsToInsert.push({
-                building_id: building_id,
-                floor: floor_number,
-                slot_number: `${prefix}-${i.toString().padStart(2, '0')}`,
-                status: 'AVAILABLE',
-                created_at: new Date(),
-                updated_at: new Date()
-            });
-        }
-
-        // 6. Bulk insert slots
-        await db('parking_slots').insert(slotsToInsert);
-
+        // generate slots 
+        const prefix = await generateSlotsFloor(building_id, floor_number, slots_count);
+        
+        // send to user
         return res.status(201).json({
             success: true,
-            message: `Floor ${floor_number} created successfully with ${slots_count} slots`,
+            message: `Floor ${floor_number} (${prefix}) created successfully with ${slots_count} slots`,
             data: {
                 building_id: building_id,
                 floor_number: floor_number,
+                floor_prefix: prefix,
                 slots_created: slots_count,
-                slot_prefix: prefix
+                created_at: new Date()
             }
         });
 
@@ -130,12 +123,21 @@ exports.create_floor_buildings = async (req, res) => {
     }
 };
 
-exports.delete_floor_buildings = async (req, res) => {
+exports.updateFloors = async (req, res) => {
     try {
+        // validation
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({
+                success: false,
+                message: 'Validation failed',
+                errors: errors.array()
+            });
+        }
+        
+        // get id and check if buildings exist
         const building_id = req.params.id;
-        const floor_number = req.params.floorNumber;
-
-        // 1. Check if building exists
+        const { floor_number, slots_count } = req.body;        
         const building = await db('buildings').where('id', building_id).first();
         if (!building) {
             return res.status(404).json({
@@ -144,7 +146,62 @@ exports.delete_floor_buildings = async (req, res) => {
             });
         }
 
-        // 2. Check if floor exists and get slots count
+        // Check if floor exists
+        const existingFloor = await db('parking_slots')
+            .where({ building_id, floor: floor_number })
+            .first();
+        if (!existingFloor) {
+            return res.status(404).json({
+                success: false,
+                message: `Floor ${floor_number} not found in this building`
+            });
+        }
+
+        // update Parkings Slot
+        const prefix = await updateSlotsFloor(building_id, floor_number, slots_count);
+        
+        const total_slot = await db('parking_slots')
+        .where({building_id, floor: floor_number})
+        .select('slot_number')
+
+        // send to user
+        return res.status(200).json({
+            success: true,
+            message: `Floor ${floor_number} (${prefix}) updated successfully with ${slots_count} slots`,
+            data: {
+                floor: {
+                    floor_number: existingFloor.floor,
+                    total_slots: total_slot.length,
+                    floor_prefix: prefix
+                },
+                updated_at: new Date()
+            }
+        });
+
+    } catch (error) {
+        console.error('Update floor error:', error);
+        return res.status(500).json({
+            success: false,
+            message: `Internal server error during update floor: ${error.message}`
+        });
+    }
+};
+
+exports.deleteFloor = async (req, res) => {
+    try {
+        const building_id = req.params.id;
+        const floor_number = req.params.floorNumber;
+
+        // check if exist
+        const building = await db('buildings').where('id', building_id).first();
+        if (!building) {
+            return res.status(404).json({
+                success: false,
+                message: 'Building not found'
+            });
+        }
+
+        // check if floor exist
         const floorSlots = await db('parking_slots')
             .where({ 
                 building_id: building_id, 
@@ -152,7 +209,6 @@ exports.delete_floor_buildings = async (req, res) => {
             })
             .count('* as slots_count')
             .first();
-
         if (!floorSlots || parseInt(floorSlots.slots_count) === 0) {
             return res.status(404).json({
                 success: false,
@@ -160,7 +216,7 @@ exports.delete_floor_buildings = async (req, res) => {
             });
         }
 
-        // 3. Delete all slots in this floor
+        // delete floor
         const deletedCount = await db('parking_slots')
             .where({ 
                 building_id: building_id, 
