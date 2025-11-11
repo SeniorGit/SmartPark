@@ -11,7 +11,7 @@ const userController = require('../controllers/userController');
 
 
 // admin Lots Floor Information      
-userRouter.get('/buildings', userController.all_lots_data); // List semua buildings
-userRouter.get('/buildings/:id', userController.get_floor_buildings); // Detail building + floors
-userRouter.get('/buildings/:id/floors/:floorNumber/slots', userController.get_floor_slots); // Slots per floor
+userRouter.get('/buildings', userController.getBuildings); // List semua buildings
+userRouter.get('/buildings/:id', userController.getFloors); // Detail building + floors
+userRouter.get('/buildings/:id/floors/:floorNumber/slots', userController.getSlots); // Slots per floor
 module.exports = {userRouter}

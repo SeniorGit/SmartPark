@@ -1,11 +1,11 @@
 const db = require('../lib/utils/database')
 
-exports.get_floor_slots = async (req, res) => {
+exports.getSlotsFloor = async (req, res) => {
     try {
         const building_id = req.params.id;
         const floor_number = parseInt(req.params.floorNumber);
 
-        // 1. Check if building exists
+        // check if builing esit
         const building = await db('buildings').where('id', building_id).first();
         if (!building) {
             return res.status(404).json({
@@ -14,20 +14,30 @@ exports.get_floor_slots = async (req, res) => {
             });
         }
 
-        // 2. Get all slots for this floor
+        // check if floor exist
+        const isFloor = await db('parking_slots').where('floor', floor_number);
+        if(!isFloor){
+            return res.status(404).json({
+                success: false,
+                message: 'Floor not found'
+            })
+        }
+
+        // get all slot floor
         const slots = await db('parking_slots')
-            .select('id', 'slot_number', 'status', 'created_at', 'updated_at')
+            .select('id', 'slot_number', 'status', 'updated_at')
             .where({ 
                 building_id: building_id, 
                 floor: floor_number 
             })
             .orderBy('slot_number');
 
-        // 3. Calculate availability
+        // calculate avaibility
         const total_slots = slots.length;
         const available_slots = slots.filter(slot => slot.status === 'AVAILABLE').length;
         const occupied_slots = total_slots - available_slots;
-
+        
+        // send data to user
         return res.status(200).json({
             success: true,
             message: `Getting slots for floor ${floor_number} in ${building.name}`,
@@ -57,12 +67,14 @@ exports.get_floor_slots = async (req, res) => {
     }
 };
 
-exports.update_slot_status = async (req, res) => {
+// update status slot for admin 
+exports.updateSlotFloor = async (req, res) => {
     try {
+        // get slot id
         const slot_id = req.params.id;
-        const { status } = req.body;
 
-        // 1. Validate status
+        // check status
+        const { status } = req.body;
         if (!status || !['AVAILABLE', 'OCCUPIED'].includes(status)) {
             return res.status(400).json({
                 success: false,
@@ -70,11 +82,10 @@ exports.update_slot_status = async (req, res) => {
             });
         }
 
-        // 2. Check if slot exists
+        // check if slots exist
         const slot = await db('parking_slots')
             .where('id', slot_id)
             .first();
-
         if (!slot) {
             return res.status(404).json({
                 success: false,
@@ -82,7 +93,7 @@ exports.update_slot_status = async (req, res) => {
             });
         }
 
-        // 3. Update slot status
+        // update status
         const [updatedSlot] = await db('parking_slots')
             .where('id', slot_id)
             .update({
@@ -90,24 +101,12 @@ exports.update_slot_status = async (req, res) => {
                 updated_at: new Date()
             })
             .returning(['id', 'slot_number', 'status', 'floor', 'updated_at']);
-
-        // 4. Get building info for response
-        const building = await db('buildings')
-            .where('id', slot.building_id)
-            .first();
-
+        
+        //send to user 
         return res.status(200).json({
             success: true,
             message: `Slot ${updatedSlot.slot_number} status updated to ${status}`,
-            data: {
-                slot: updatedSlot,
-                building: {
-                    id: building.id,
-                    name: building.name
-                }
-            }
         });
-
     } catch (error) {
         console.error('Update slot status error:', error);
         return res.status(500).json({

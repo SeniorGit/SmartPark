@@ -111,7 +111,7 @@ exports.login = async (req, res) => {
                     role: userRole
                 },
                 token: token,
-                redirectTo: userRole === 'ADMIN' ? '/admin' : '/dashboard'
+                redirectTo: userRole === 'ADMIN' ? '/dashboardAdmin' : '/dashboard'
             },
         })
     }catch(error){
