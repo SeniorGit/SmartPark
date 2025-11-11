@@ -31,9 +31,10 @@ adminRouter.put('/buildings/:id', adminBuilingsController.updateParkingLots);   
 adminRouter.delete('/buildings/:id',adminBuilingsController.deleteParkingLots);     // Delete building
 
 // ===== FLOORS MANAGEMENT =====
-adminRouter.get('/buildings/:id/floors', adminFloorController.get_floor_buildings);      // Get all floors in building
-adminRouter.post('/buildings/:id/floors', adminFloorController.create_floor_buildings);  // Add new floor to building
-adminRouter.delete('/buildings/:id/floors/:floorNumber', adminFloorController.delete_floor_buildings); // Delete specific floor
+adminRouter.get('/buildings/:id/floors', adminFloorController.getAllFloors);      // Get all floors in building
+adminRouter.post('/buildings/:id/floors', adminFloorController.createFloors);  // Add new floor to building
+adminRouter.put('/buildings/:id/floors', adminFloorController.updateFloors)
+adminRouter.delete('/buildings/:id/floors/:floorNumber', adminFloorController.deleteFloor); // Delete specific floor
 
 // ===== SLOTS MANAGEMENT =====
 adminRouter.get('/buildings/:id/floors/:floorNumber/slots', adminSlotsController.get_floor_slots); // Get slots by floor

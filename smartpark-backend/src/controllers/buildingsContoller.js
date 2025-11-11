@@ -1,9 +1,10 @@
 const db = require('../lib/utils/database')
-const {validationResult, body} = require('express-validator')
+const {validationResult} = require('express-validator')
 
 // show all data park buildings
 exports.showAllParkingLot = async (req, res) => {
     try{
+        // get all building data and send to user
         const lots = await db('buildings').select('id', 'name', 'address', 'total_floors');
         return res.status(200).json({
             success: true,
@@ -45,12 +46,11 @@ exports.createParkingLots = async (req, res) => {
             total_floors: total_floors
         }).returning(['id', 'name', 'address', 'total_floors', 'created_at'])
 
+        // sending data to user
         return res.status(201).json({
             success: true,
             message: `Parking lots at ${createLots.name} successful created`,
-            data: {
-                user: createLots
-            }
+            data: createLots
         })
     }catch(error){
         console.error(error);
@@ -61,6 +61,7 @@ exports.createParkingLots = async (req, res) => {
     }
 }
 
+// update building
 exports.updateParkingLots = async (req, res) => {
     try{
         // validation
@@ -112,6 +113,7 @@ exports.updateParkingLots = async (req, res) => {
     }
 }
 
+// delete building
 exports.deleteParkingLots = async (req, res) => {
     try{
         // get id and check if Id exist
@@ -126,7 +128,6 @@ exports.deleteParkingLots = async (req, res) => {
 
         // delete builings rows
         await db('buildings').where('id', id).del()
-
         return res.status(201).json({
             success: true,
             message: `lots ${isID.name} deleted successfully`
