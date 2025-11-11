@@ -37,7 +37,7 @@ adminRouter.put('/buildings/:id/floors', adminFloorController.updateFloors)
 adminRouter.delete('/buildings/:id/floors/:floorNumber', adminFloorController.deleteFloor); // Delete specific floor
 
 // ===== SLOTS MANAGEMENT =====
-adminRouter.get('/buildings/:id/floors/:floorNumber/slots', adminSlotsController.get_floor_slots); // Get slots by floor
-adminRouter.put('/slots/:id/status', adminSlotsController.update_slot_status); // Update slot status
+adminRouter.get('/buildings/:id/floors/:floorNumber/slots', adminSlotsController.getSlotsFloor); // Get slots by floor
+adminRouter.put('/buildings/:id/floors/:floorNumber/slots/:id', adminSlotsController.updateSlotFloor); // Update slot status
 
 module.exports = { adminRouter };

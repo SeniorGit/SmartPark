@@ -106,11 +106,13 @@ exports.createFloors = async (req, res) => {
             success: true,
             message: `Floor ${floor_number} (${prefix}) created successfully with ${slots_count} slots`,
             data: {
-                building_id: building_id,
-                floor_number: floor_number,
-                floor_prefix: prefix,
-                slots_created: slots_count,
-                created_at: new Date()
+                floors: {
+                    building_id: building_id,
+                    floor_number: floor_number,
+                    floor_prefix: prefix,
+                    slots_created: slots_count,
+                    created_at: new Date()
+                }
             }
         });
 
@@ -168,14 +170,6 @@ exports.updateFloors = async (req, res) => {
         return res.status(200).json({
             success: true,
             message: `Floor ${floor_number} (${prefix}) updated successfully with ${slots_count} slots`,
-            data: {
-                floor: {
-                    floor_number: existingFloor.floor,
-                    total_slots: total_slot.length,
-                    floor_prefix: prefix
-                },
-                updated_at: new Date()
-            }
         });
 
     } catch (error) {
@@ -227,11 +221,6 @@ exports.deleteFloor = async (req, res) => {
         return res.status(200).json({
             success: true,
             message: `Floor ${floor_number} deleted successfully (${deletedCount} slots removed)`,
-            data: {
-                building_id: building_id,
-                floor_number: floor_number,
-                slots_deleted: deletedCount
-            }
         });
 
     } catch (error) {

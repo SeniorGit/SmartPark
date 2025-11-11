@@ -10,7 +10,7 @@ exports.showAllParkingLot = async (req, res) => {
             success: true,
             message: 'Getting all data successfuly',
             data: {
-                user: lots
+                building: lots
             }
         })
     }catch(error){
@@ -50,7 +50,9 @@ exports.createParkingLots = async (req, res) => {
         return res.status(201).json({
             success: true,
             message: `Parking lots at ${createLots.name} successful created`,
-            data: createLots
+            data: {
+                building: createLots
+            }
         })
     }catch(error){
         console.error(error);
