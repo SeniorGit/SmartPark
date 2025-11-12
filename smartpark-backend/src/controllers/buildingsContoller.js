@@ -49,7 +49,7 @@ exports.createParkingLots = async (req, res) => {
         // sending data to user
         return res.status(201).json({
             success: true,
-            message: `Parking lots at ${createLots.name} successful created`,
+            message: `Parking lots at ${name} successful created`,
             data: {
                 building: createLots
             }
@@ -92,7 +92,7 @@ exports.updateParkingLots = async (req, res) => {
         }
 
         // update builings data
-        const updateLots = await db('buildings')
+        const [updateLots] = await db('buildings')
         .where('id', id)
         .update({
             name: name,
@@ -104,7 +104,10 @@ exports.updateParkingLots = async (req, res) => {
 
         return res.status(200).json({
             success: true,
-            message: `Updated at ${updateLots.name} successfuly`
+            message: `Updated at ${name} successfuly`,
+            data: {
+                building: updateLots
+            }
         })
     }catch(error){
         console.error(error);

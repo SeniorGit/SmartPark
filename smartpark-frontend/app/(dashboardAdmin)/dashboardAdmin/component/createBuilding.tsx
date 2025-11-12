@@ -1,33 +1,37 @@
-// /app/admin/dashboard/components/CreateBuildingModal.tsx
 'use client';
 
 import { useState } from 'react';
-import { CreateBuildingData } from '@/types/adminDash';
+import { CreateBuilding } from '@/types/building';
 import dashboardStyles from '../style/dashboard.module.css';
 
+// insiate data
 interface CreateBuildingModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onCreate: (buildingData: CreateBuildingData) => Promise<void>;
+  onCreate: (buildingData: CreateBuilding) => Promise<void>;
 }
 
 export default function CreateBuildingModal({ isOpen, onClose, onCreate }: CreateBuildingModalProps) {
-  const [formData, setFormData] = useState<CreateBuildingData>({
+  // input state
+  const [formData, setFormData] = useState<CreateBuilding>({
     name: '',
     address: '',
-    total_floors: 1,
   });
+
+  // loading state and error
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
+  // submit handler
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError('');
-
+    
+    // update processing on service
     try {
       await onCreate(formData);
-      setFormData({ name: '', address: '', total_floors: 1 });
+      setFormData({ name: '', address: '' });
       onClose();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to create building');
@@ -36,17 +40,20 @@ export default function CreateBuildingModal({ isOpen, onClose, onCreate }: Creat
     }
   };
 
+  // handle form close
   const handleClose = () => {
-    setFormData({ name: '', address: '', total_floors: 1 });
+    setFormData({ name: '', address: ''});
     setError('');
     onClose();
   };
 
+  // make sure the page not load if not open
   if (!isOpen) return null;
 
   return (
     <div className={dashboardStyles.modalOverlay}>
       <div className={dashboardStyles.modal}>
+        {/* header */}
         <div className={dashboardStyles.modalHeader}>
           <h2 className={dashboardStyles.modalTitle}>Add New Building</h2>
           <button className={dashboardStyles.closeButton} onClick={handleClose}>
@@ -54,9 +61,12 @@ export default function CreateBuildingModal({ isOpen, onClose, onCreate }: Creat
           </button>
         </div>
 
+        {/* error display */}
         {error && <div className={dashboardStyles.error}>{error}</div>}
 
+        {/* main contain form */}
         <form onSubmit={handleSubmit}>
+          {/* Input Builing name */}
           <div className={dashboardStyles.formGroup}>
             <label className={dashboardStyles.formLabel}>Building Name</label>
             <input
@@ -70,6 +80,7 @@ export default function CreateBuildingModal({ isOpen, onClose, onCreate }: Creat
             />
           </div>
 
+          {/* input Adrress */}
           <div className={dashboardStyles.formGroup}>
             <label className={dashboardStyles.formLabel}>Address</label>
             <textarea
@@ -82,20 +93,9 @@ export default function CreateBuildingModal({ isOpen, onClose, onCreate }: Creat
             />
           </div>
 
-          <div className={dashboardStyles.formGroup}>
-            <label className={dashboardStyles.formLabel}>Total Floors</label>
-            <input
-              type="number"
-              className={dashboardStyles.formInput}
-              value={formData.total_floors}
-              onChange={(e) => setFormData({ ...formData, total_floors: parseInt(e.target.value) || 1 })}
-              min="1"
-              max="20"
-              required
-            />
-          </div>
-
+          {/* Button */}
           <div className={dashboardStyles.modalActions}>
+            {/* cancel button */}
             <button
               type="button"
               className={`${dashboardStyles.button} ${dashboardStyles.cancelButton}`}
@@ -104,6 +104,7 @@ export default function CreateBuildingModal({ isOpen, onClose, onCreate }: Creat
             >
               Cancel
             </button>
+            {/* submit button */}
             <button
               type="submit"
               className={`${dashboardStyles.button} ${dashboardStyles.primary}`}

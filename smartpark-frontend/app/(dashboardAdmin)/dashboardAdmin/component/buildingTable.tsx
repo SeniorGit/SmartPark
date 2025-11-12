@@ -1,10 +1,10 @@
-// /app/admin/dashboard/components/BuildingsTable.tsx
 'use client';
 
-import { Building } from '@/types/adminDash';
+import { Building} from '@/types/building';
 import { useRouter } from 'next/navigation';
 import dashboardStyles from '../style/dashboard.module.css';
 
+// inisiate state
 interface BuildingsTableProps {
   buildings: Building[];
   onEdit: (building: Building) => void;
@@ -18,21 +18,24 @@ export default function BuildingsTable({
   onDelete, 
   isLoading 
 }: BuildingsTableProps) {
+  // send user to detail buildings
   const router = useRouter();
-
   const handleDetailClick = (buildingId: string) => {
     router.push(`/buildings/${buildingId}`);
   };
 
+  // loading state
   if (isLoading) {
     return <div className={dashboardStyles.loading}>Loading buildings...</div>;
   }
 
+  // check if any data
   if (buildings.length === 0) {
     return <div className={dashboardStyles.loading}>No buildings found. Create your first building!</div>;
   }
 
   return (
+    // creating admin table with all data 
     <div className={dashboardStyles.tableContainer}>
       <table className={dashboardStyles.table}>
         <thead>
@@ -40,8 +43,8 @@ export default function BuildingsTable({
             <th>ID</th>
             <th>Building Name</th>
             <th>Address</th>
-            <th>Total Floors</th>
-            <th>Available Slots</th>
+            {/* <th>Total Floors</th>
+            <th>Available Slots</th> */}
             <th>Actions</th>
           </tr>
         </thead>
@@ -53,15 +56,15 @@ export default function BuildingsTable({
                 <strong>{building.name}</strong>
               </td>
               <td>{building.address}</td>
-              <td>{building.total_floors}</td>
-              <td>
+              {/* <td>{building.total_floors}</td> */}
+              {/* <td>
                 <span style={{ 
                   color: building.available_slots > 0 ? '#38a169' : '#e53e3e',
                   fontWeight: '600'
                 }}>
                   {building.available_slots}
                 </span>
-              </td>
+              </td> */}
               <td>
                 <div className={dashboardStyles.actionButtons}>
                   <button
