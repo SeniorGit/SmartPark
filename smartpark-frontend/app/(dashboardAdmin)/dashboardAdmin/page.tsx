@@ -1,9 +1,8 @@
-// /app/admin/dashboard/page.tsx
 'use client';
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Building, CreateBuildingData, UpdateBuildingData } from '@/types/adminDash';
+import { Building, CreateBuilding, UpdateBuilding } from '@/types/building';
 import { BuildingService } from '@/lib/services/buildingService';
 import BuildingsTable from './component/buildingTable';
 import CreateBuildingModal from './component/createBuilding';
@@ -40,7 +39,9 @@ export default function AdminDashboard() {
     fetchBuildings();
   }, []);
 
+  // get building data
   const fetchBuildings = async () => {
+    // try to access building data
     try {
       setIsLoading(true);
       const buildingsData = await BuildingService.getAllBuildings();
@@ -53,9 +54,12 @@ export default function AdminDashboard() {
     }
   };
 
-  const handleCreateBuilding = async (buildingData: CreateBuildingData) => {
+  // handle to create building data
+  const handleCreateBuilding = async (buildingData: CreateBuilding) => {
     try {
+      // try to create new building
       const newBuilding = await BuildingService.createBuilding(buildingData);
+      // add new builing on the last array
       setBuildings(prev => [...prev, newBuilding]);
       setSuccess('Building created successfully!');
       setTimeout(() => setSuccess(''), 3000);
@@ -64,9 +68,12 @@ export default function AdminDashboard() {
     }
   };
 
-  const handleUpdateBuilding = async (buildingId: string, buildingData: UpdateBuildingData) => {
+  // handle to update building data
+  const handleUpdateBuilding = async (buildingId: string, buildingData: UpdateBuilding) => {
     try {
+      // try update building
       const updatedBuilding = await BuildingService.updateBuilding(buildingId, buildingData);
+      // replace builing on the prev location
       setBuildings(prev => 
         prev.map(building => 
           building.id === buildingId ? { ...building, ...updatedBuilding } : building
@@ -79,13 +86,17 @@ export default function AdminDashboard() {
     }
   };
 
+  // delete handler
   const handleDeleteBuilding = async (buildingId: string) => {
+    // confirmation before delete
     if (!confirm('Are you sure you want to delete this building? This action cannot be undone.')) {
       return;
     }
 
+    // try to delete builing 
     try {
       await BuildingService.deleteBuilding(buildingId);
+      // remove by id, if there any same id it will remove from buildings
       setBuildings(prev => prev.filter(building => building.id !== buildingId));
       setSuccess('Building deleted successfully!');
       setTimeout(() => setSuccess(''), 3000);
@@ -94,14 +105,15 @@ export default function AdminDashboard() {
     }
   };
 
+  // Open edit modal and fill with prev data
   const handleEditBuilding = (building: Building) => {
     setSelectedBuilding(building);
     setIsUpdateModalOpen(true);
   };
 
+  // logout handler
   const handleLogout = () => {
     localStorage.removeItem('token');
-    localStorage.removeItem('user');
     router.push('/login');
   };
 
@@ -112,10 +124,6 @@ export default function AdminDashboard() {
         <div className={dashboardStyles.headerContent}>
           <h1 className={dashboardStyles.title}>SmartParking Admin</h1>
           <div className={dashboardStyles.userSection}>
-            <div className={dashboardStyles.userInfo}>
-              <p className={dashboardStyles.userName}>{user?.firstName} {user?.lastName}</p>
-              <p className={dashboardStyles.userRole}>{user?.role}</p>
-            </div>
             <button 
               className={`${dashboardStyles.button} ${dashboardStyles.secondary}`}
               onClick={handleLogout}
@@ -136,6 +144,7 @@ export default function AdminDashboard() {
         <div className={dashboardStyles.actions}>
           <h2 className={dashboardStyles.pageTitle}>Parking Buildings</h2>
           <div className={dashboardStyles.buttons}>
+            {/* add button section */}
             <button
               className={`${dashboardStyles.button} ${dashboardStyles.primary}`}
               onClick={() => setIsCreateModalOpen(true)}

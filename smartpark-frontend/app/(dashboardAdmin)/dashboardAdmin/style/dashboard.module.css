@@ -27,28 +27,6 @@
   margin: 0;
 }
 
-.userSection {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.userInfo {
-  text-align: right;
-}
-
-.userName {
-  font-weight: 600;
-  color: #333;
-  margin: 0;
-}
-
-.userRole {
-  color: #666;
-  font-size: 0.9rem;
-  margin: 0;
-}
-
 .main {
   padding: 2rem;
 }

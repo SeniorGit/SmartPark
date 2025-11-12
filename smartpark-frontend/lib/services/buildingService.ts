@@ -1,10 +1,11 @@
-import { Building, CreateBuildingData, UpdateBuildingData } from '@/types/adminDash';
-
+import { Building, ApiResponse, BuildingResponse, CreateBuilding, UpdateBuilding } from '@/types/building';
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export const BuildingService = {
+
   // Get all buildings
-  async getAllBuildings() {
+  async getAllBuildings(): Promise<Building[]> {
+    // get token and send data to backend
     const token = localStorage.getItem('token');
     const response = await fetch(`${API_URL}/api/admin/buildings`, {
       method: 'GET',
@@ -14,51 +15,50 @@ export const BuildingService = {
       },
     });
 
+    // http error
     if (!response.ok) {
-      throw new Error('Failed to fetch buildings');
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    const result = await response.json();
-    
-    return result;
+    // get backend response
+    const result: ApiResponse<BuildingResponse> = await response.json();
+    if (result.success) {
+      return result.data?.building || [];
+    }
+    throw new Error(result.message);
   },
 
   // Create new building
-  async createBuilding(buildingData: CreateBuildingData): Promise<Building> {
-    // take token from local storage
+  async createBuilding(BuildingData: CreateBuilding): Promise<Building> {
+    // get token and send data to backend
     const token = localStorage.getItem('token');
-
-    // post data from form
-    const response = await fetch(`${API_URL}/admin/buildings`, {
+    const response = await fetch(`${API_URL}/api/admin/buildings`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(buildingData),
+      body: JSON.stringify(BuildingData),
     });
-    // if failed post data
+
+    // http error handling
     if (!response.ok) {
-      const errorData = await response.json().catch(() => null);
-      throw new Error(errorData?.message || 'Failed to create building');
+      throw new Error(`HTTP error! status Create: ${response.status}`);
     }
 
-    const result = await response.json();
-    
-    if (result.success && result.data) {
-      return result.data;
-    } else if (result.success && Array.isArray(result.data) && result.data.length > 0) {
-      // Handle returning array format
-      return result.data[0];
-    } else {
-      throw new Error('Invalid response format after creation');
+    // get backend response
+    const result: ApiResponse<{building: Building}> = await response.json();
+    if (result.success) {
+      return result.data!.building;
     }
+    throw new Error(result.message)
   },
 
   // Update building
-  async updateBuilding(buildingId: string, buildingData: UpdateBuildingData): Promise<Building> {
+  async updateBuilding(buildingId: string, buildingData: UpdateBuilding): Promise<Building> {
+    // get token and send data to backend
     const token = localStorage.getItem('token');
-    const response = await fetch(`${API_URL}/admin/buildings/${buildingId}`, {
+    const response = await fetch(`${API_URL}/api/admin/buildings/${buildingId}`, {
       method: 'PUT',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -67,44 +67,42 @@ export const BuildingService = {
       body: JSON.stringify(buildingData),
     });
 
+    // http error handling
     if (!response.ok) {
-      const errorData = await response.json().catch(() => null);
-      throw new Error(errorData?.message || 'Failed to update building');
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    const result = await response.json();
-    
+    // get backend response
+    const result: ApiResponse<{building:Building}> = await response.json();
     if (result.success) {
-      // Jika backend tidak return updated data, kita return data yang di-update
-      return {
-        id: buildingId,
-        ...buildingData,
-        // Field lainnya akan di-handle oleh optimistic update di component
-      } as Building;
+      return result.data!.building;
     } else {
       throw new Error(result.message || 'Failed to update building');
     }
   },
 
-  // Delete building
-  async deleteBuilding(buildingId: string): Promise<void> {
+// Delete
+  async deleteBuilding(buildingId: string): Promise<string> {
+    // get token and do Delete rows
     const token = localStorage.getItem('token');
-    const response = await fetch(`${API_URL}/admin/buildings/${buildingId}`, {
+    const response = await fetch(`${API_URL}/api/admin/buildings/${buildingId}`, {
       method: 'DELETE',
       headers: {
         'Authorization': `Bearer ${token}`,
       },
     });
 
+    // http error handling
     if (!response.ok) {
-      const errorData = await response.json().catch(() => null);
-      throw new Error(errorData?.message || 'Failed to delete building');
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    const result = await response.json();
-    
-    if (!result.success) {
+    // get backend response
+    const result: ApiResponse<undefined> = await response.json();
+    if (result.success) {
+      return result.message; 
+    } else {
       throw new Error(result.message || 'Failed to delete building');
     }
-  },
+  }
 };
