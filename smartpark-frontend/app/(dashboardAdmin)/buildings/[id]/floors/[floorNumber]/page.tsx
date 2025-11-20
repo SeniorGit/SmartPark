@@ -2,17 +2,17 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { Slot, ResponseSlotsByFloor } from '@/types/floorNslot';
+import { Slot, ResponseGetSlots } from '@/types/floorNslot';
 import { slotService } from '@/lib/services/slotService';
 import SlotGrid from './component/slotGrid';
 import styles from './style/slots.module.css';
 
-export default function FloorDetailPage({ params }: { params: { id: string; floorNumber: string } }) {
-  const {id:buildingId, floorNumber} = params
-  const param = useParams();
+export default function FloorDetailPage() {
+  const params = useParams();
   const router = useRouter();
-  // const buildingId = param.id as string;
-  // const floorNumber = parseInt(param.floorNumber as string);
+  
+  const buildingId = params.id as string;
+  const floorNumber = parseInt(params.floorNumber as string);
 
   const [slots, setSlots] = useState<Slot[]>([]);
   const [building, setBuilding] = useState<any>(null);
@@ -21,14 +21,14 @@ export default function FloorDetailPage({ params }: { params: { id: string; floo
   const [error, setError] = useState('');
   const [updatingSlot, setUpdatingSlot] = useState<string | null>(null);
 
+  // to refresh data for each change
   useEffect(() => {
     loadSlots();
   }, [buildingId, floorNumber]);
-
   const loadSlots = async () => {
     try {
       setLoading(true);
-      const response: ResponseSlotsByFloor = await slotService.getFloorSlots(buildingId, floorNumber);
+      const response: ResponseGetSlots = await slotService.getFloorSlots(buildingId, floorNumber);
       setBuilding(response.data.building);
       setSummary(response.data.summary);
       setSlots(response.data.slots);
@@ -40,18 +40,15 @@ export default function FloorDetailPage({ params }: { params: { id: string; floo
     }
   };
 
+  // handling changing on slot status
   const handleStatusChange = async (slotId: string, newStatus: 'AVAILABLE' | 'OCCUPIED') => {
     try {
       setUpdatingSlot(slotId);
-
-      // Optimistic update untuk UX yang lebih responsif
       setSlots(prevSlots =>
         prevSlots.map(slot =>
           slot.id === slotId ? { ...slot, status: newStatus } : slot
         )
       );
-
-      // Update summary secara optimistic
       setSummary(prevSummary => {
         if (!prevSummary) return prevSummary;
         
@@ -66,19 +63,19 @@ export default function FloorDetailPage({ params }: { params: { id: string; floo
         };
       });
 
-      // Panggil API untuk update status
-      await slotService.updateSlotStatus(slotId, { status: newStatus });
+      // send update to databse
+      await slotService.updateSlotStatus(buildingId, floorNumber ,slotId, { status: newStatus });
       
     } catch (err) {
       setError('Failed to update slot status');
       console.error(err);
-      // Jika error, reload data untuk sync dengan server
       await loadSlots();
     } finally {
       setUpdatingSlot(null);
     }
   };
 
+  // loading state
   if (loading) {
     return (
       <div className={styles.loadingContainer}>
@@ -88,6 +85,7 @@ export default function FloorDetailPage({ params }: { params: { id: string; floo
     );
   }
 
+  // error handling 
   if (error) {
     return (
       <div className={styles.errorContainer}>
@@ -108,7 +106,7 @@ export default function FloorDetailPage({ params }: { params: { id: string; floo
       {/* Header Section */}
       <div className={styles.header}>
         <button
-          onClick={() => router.push(`/admin/buildings/${buildingId}`)}
+          onClick={() => router.push(`/buildings/${buildingId}`)}
           className={styles.backButton}
         >
           ← Back to Building

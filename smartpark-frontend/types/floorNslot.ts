@@ -12,11 +12,13 @@ export interface Floor {
     updated_at: Date;
 }
 
+// create floor
 export interface CreateFloor{
     floor: number;
     total_slots: number;
 }
 
+// response get builing
 export interface ResponseDetailBuilding{
     success: boolean;
     message: string;
@@ -26,6 +28,7 @@ export interface ResponseDetailBuilding{
     }
 }
 
+// response create floor
 export interface ResponseCreateFloor{
     success: boolean;
     message: string;
@@ -44,15 +47,20 @@ export interface Slot{
     status: 'AVAILABLE' | 'OCCUPIED';
 }
 
+// update slot
+export interface SlotUpdate{
+    status: 'AVAILABLE' | 'OCCUPIED';
+}
+
 // Untuk get slots by floor
-export interface ResponseSlotsByFloor {
+export interface ResponseGetSlots {
     success: boolean;
     message: string;
     data: {
-        building: Building;  // ↑ Context building
-        floor: Floor;        // ↑ Context floor  
-        slots: Slot[];       // ↑ Slots di floor ini
-        summary?: {          // ↑ Optional analytics
+        building: Building;  
+        floor: Floor;        
+        slots: Slot[];       
+        summary?: {         
             total_slots: number;
             available_slots: number;
             occupied_slots: number;
@@ -60,11 +68,11 @@ export interface ResponseSlotsByFloor {
     }
 }
 
-// Untuk update slot status
+// Update slots
 export interface ResponseUpdateSlot {
     success: boolean;
     message: string;
     data: {
-        slot: Slot;          // ↑ Hanya slot yang di-update
+        slot: Slot;         
     }
 }
