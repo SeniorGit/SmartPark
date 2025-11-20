@@ -2,16 +2,17 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { Slot, SlotsResponse } from '@/types/building';
+import { Slot, ResponseSlotsByFloor } from '@/types/floorNslot';
 import { slotService } from '@/lib/services/slotService';
 import SlotGrid from './component/slotGrid';
 import styles from './style/slots.module.css';
 
-export default function SlotsManagementPage() {
-  const params = useParams();
+export default function FloorDetailPage({ params }: { params: { id: string; floorNumber: string } }) {
+  const {id:buildingId, floorNumber} = params
+  const param = useParams();
   const router = useRouter();
-  const buildingId = params.id as string;
-  const floorNumber = parseInt(params.floorNumber as string);
+  // const buildingId = param.id as string;
+  // const floorNumber = parseInt(param.floorNumber as string);
 
   const [slots, setSlots] = useState<Slot[]>([]);
   const [building, setBuilding] = useState<any>(null);
@@ -27,7 +28,7 @@ export default function SlotsManagementPage() {
   const loadSlots = async () => {
     try {
       setLoading(true);
-      const response: SlotsResponse = await slotService.getFloorSlots(buildingId, floorNumber);
+      const response: ResponseSlotsByFloor = await slotService.getFloorSlots(buildingId, floorNumber);
       setBuilding(response.data.building);
       setSummary(response.data.summary);
       setSlots(response.data.slots);
