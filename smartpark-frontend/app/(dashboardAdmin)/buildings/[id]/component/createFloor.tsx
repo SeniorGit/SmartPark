@@ -1,40 +1,40 @@
-'use client';
-
 import { useState } from 'react';
-import { CreateFloorRequest } from '@/types/building';
+import { CreateFloor } from '@/types/floorNslot';
 import styles from '../style/building.module.css';
 
 interface CreateFloorModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (data: CreateFloorRequest) => void;
+  onSubmit: (data: CreateFloor) => void;
   buildingId: string;
 }
 
-export default function CreateFloorModal({ isOpen, onClose, onSubmit, buildingId }: CreateFloorModalProps) {
-  const [formData, setFormData] = useState<CreateFloorRequest>({
-    floor_number: 1,
-    slots_count: 10,
-    prefix: `B${buildingId.slice(0, 4).toUpperCase()}`,
+// create floor form
+export default function CreateFloorModal({ isOpen, onClose, onSubmit }: CreateFloorModalProps) {
+  const [formData, setFormData] = useState<CreateFloor>({
+    floor: 1,
+    total_slots: 10,
+    
   });
 
+  // handle sumbit
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSubmit(formData);
     onClose();
-    // Reset form
     setFormData({
-      floor_number: 1,
-      slots_count: 10,
-      prefix: `B${buildingId.slice(0, 4).toUpperCase()}`,
+      floor: 1,
+      total_slots: 10,
     });
   };
 
+  // make sure not working when not open 
   if (!isOpen) return null;
 
   return (
     <div className={styles.modalOverlay}>
       <div className={styles.modal}>
+        {/* header */}
         <div className={styles.modalHeader}>
           <h2 className={styles.modalTitle}>Create New Floor</h2>
           <button onClick={onClose} className={styles.closeButton}>
@@ -42,7 +42,9 @@ export default function CreateFloorModal({ isOpen, onClose, onSubmit, buildingId
           </button>
         </div>
 
+        {/* main content */}
         <form onSubmit={handleSubmit} className={styles.modalForm}>
+          {/* floor number input */}
           <div className={styles.formGroup}>
             <label htmlFor="floorNumber" className={styles.formLabel}>
               Floor Number
@@ -52,13 +54,14 @@ export default function CreateFloorModal({ isOpen, onClose, onSubmit, buildingId
               type="number"
               min="1"
               max="100"
-              value={formData.floor_number}
-              onChange={(e) => setFormData({ ...formData, floor_number: parseInt(e.target.value) })}
+              value={formData.floor}
+              onChange={(e) => setFormData({ ...formData, floor: parseInt(e.target.value) })}
               className={styles.formInput}
               required
             />
           </div>
 
+          {/* total slots input */}
           <div className={styles.formGroup}>
             <label htmlFor="slotsCount" className={styles.formLabel}>
               Total Parking Slots
@@ -68,8 +71,8 @@ export default function CreateFloorModal({ isOpen, onClose, onSubmit, buildingId
               type="number"
               min="1"
               max="100"
-              value={formData.slots_count}
-              onChange={(e) => setFormData({ ...formData, slots_count: parseInt(e.target.value) })}
+              value={formData.total_slots}
+              onChange={(e) => setFormData({ ...formData, total_slots: parseInt(e.target.value) })}
               className={styles.formInput}
               required
             />
@@ -78,24 +81,7 @@ export default function CreateFloorModal({ isOpen, onClose, onSubmit, buildingId
             </small>
           </div>
 
-          <div className={styles.formGroup}>
-            <label htmlFor="slotPrefix" className={styles.formLabel}>
-              Slot Number Prefix (Optional)
-            </label>
-            <input
-              id="slotPrefix"
-              type="text"
-              value={formData.prefix}
-              onChange={(e) => setFormData({ ...formData, prefix: e.target.value })}
-              className={styles.formInput}
-              placeholder="e.g., A1, B2, etc."
-              maxLength={10}
-            />
-            <small className={styles.helperText}>
-              Prefix for slot numbers (e.g., A1-001, A1-002, ...)
-            </small>
-          </div>
-
+          {/* button submit and cancel */}
           <div className={styles.modalActions}>
             <button
               type="button"

@@ -2,23 +2,30 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { Building, Floor } from '@/types/building';
+import { Building } from '@/types/building';
+import { Floor, CreateFloor } from '@/types/floorNslot'
 import { buildingService } from '@/lib/services/floorService';
 import CreateFloorModal from './component/createFloor';
 import FloorCard from './component/floorCard';
 import styles from './style/building.module.css';
 
-export default function BuildingDetailsPage() {
+
+export default function BuildingDetailPage() {
   const params = useParams();
   const router = useRouter();
-  const buildingId = params.id as string;
+  const buildingId = params.id as string; 
 
   const [building, setBuilding] = useState<Building | null>(null);
   const [floors, setFloors] = useState<Floor[]>([]);
+
+  // loading and error handling
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+
+  // form open handler
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  // will each loaded
   useEffect(() => {
     loadFloors();
   }, [buildingId]);
@@ -26,7 +33,11 @@ export default function BuildingDetailsPage() {
   const loadFloors = async () => {
     try {
       setLoading(true);
+      
+      // get data
       const response = await buildingService.getFloorsByBuilding(buildingId);
+      
+      // show building and floors
       setBuilding(response.data.building);
       setFloors(response.data.floors);
     } catch (err) {
@@ -37,16 +48,18 @@ export default function BuildingDetailsPage() {
     }
   };
 
-  const handleCreateFloor = async (data: CreateFloorRequest) => {
+  // handle create floor
+  const handleCreateFloor = async (data: CreateFloor) => {
     try {
       await buildingService.createFloor(buildingId, data);
-      await loadFloors(); // Reload data setelah create
+      await loadFloors(); // auto reload each created
     } catch (err) {
       setError('Failed to create floor');
       console.error(err);
     }
   };
 
+  // handler delete floor
   const handleDeleteFloor = async (floorNumber: number) => {
     try {
       await buildingService.deleteFloor(buildingId, floorNumber);
@@ -57,6 +70,7 @@ export default function BuildingDetailsPage() {
     }
   };
 
+  // loading state
   if (loading) {
     return (
       <div className={styles.loadingContainer}>
@@ -65,6 +79,7 @@ export default function BuildingDetailsPage() {
     );
   }
 
+  // when error or not connect to backend
   if (error) {
     return (
       <div className={styles.errorContainer}>
@@ -81,10 +96,11 @@ export default function BuildingDetailsPage() {
 
   return (
     <div className={styles.container}>
+
       {/* Header Section */}
       <div className={styles.header}>
         <button
-          onClick={() => router.push('/admin/dashboard')}
+          onClick={() => router.push('/dashboardAdmin')}
           className={styles.backButton}
         >
           ← Back to Dashboard
@@ -95,6 +111,7 @@ export default function BuildingDetailsPage() {
           <p className={styles.buildingAddress}>{building?.address}</p>
         </div>
 
+        {/* create floor buttons */}
         <button
           onClick={() => setIsModalOpen(true)}
           className={styles.createFloorButton}
@@ -121,11 +138,13 @@ export default function BuildingDetailsPage() {
           </div>
         ) : (
           <>
+          {/* header floor */}
             <div className={styles.floorsHeader}>
-              <h2 className={styles.floorsTitle}>Building Floors</h2>
+              <h2 className={styles.floorsTitle}>Building Floors : {buildingId}</h2>
               <span className={styles.floorsCount}>{floors.length} floor(s)</span>
             </div>
             
+            {/* main content */}
             <div className={styles.floorsGrid}>
               {floors.map((floor) => (
                 <FloorCard
