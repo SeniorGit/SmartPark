@@ -1,12 +1,12 @@
-import { SlotsResponse, UpdateSlotStatusRequest, UpdateSlotStatusResponse } from '@/types/building';
+import { ResponseGetSlots, SlotUpdate, ResponseUpdateSlot } from '@/types/floorNslot';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export const slotService = {
   // Get slots by floor
-  async getFloorSlots(buildingId: string, floorNumber: number): Promise<SlotsResponse> {
+  async getFloorSlots(buildingId: string, floorNumber: number): Promise<ResponseGetSlots> {
     const token = localStorage.getItem('token');
-    const response = await fetch(`${API_URL}/admin/buildings/${buildingId}/floors/${floorNumber}/slots`, {
+    const response = await fetch(`${API_URL}/api/admin/buildings/${buildingId}/floors/${floorNumber}/slots`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -22,9 +22,10 @@ export const slotService = {
   },
 
   // Update slot status
-  async updateSlotStatus(slotId: string, status: UpdateSlotStatusRequest): Promise<UpdateSlotStatusResponse> {
+  async updateSlotStatus(buildingId: string, floorNumber: number,slotId: string, status: SlotUpdate): Promise<ResponseUpdateSlot> {
     const token = localStorage.getItem('token');
-    const response = await fetch(`${API_URL}/admin/slots/${slotId}/status`, {
+    const response = await fetch(`${API_URL}/api/admin/buildings/${buildingId}/floors/${floorNumber}/slots/${slotId}`, {
+      
       method: 'PUT',
       headers: {
         'Authorization': `Bearer ${token}`,

@@ -1,6 +1,6 @@
 'use client';
 
-import { Slot } from '@/types/building';
+import { Slot } from '@/types/floorNslot';
 import SlotCard from './slotCard';
 import styles from '../style/slots.module.css';
 
@@ -10,8 +10,8 @@ interface SlotGridProps {
   updatingSlot: string | null;
 }
 
+// creating auto grid as much the data 
 export default function SlotGrid({ slots, onStatusChange, updatingSlot }: SlotGridProps) {
-  // Group slots into rows for better organization
   const groupSlots = (slots: Slot[], groupSize: number = 6) => {
     const groups = [];
     for (let i = 0; i < slots.length; i += groupSize) {

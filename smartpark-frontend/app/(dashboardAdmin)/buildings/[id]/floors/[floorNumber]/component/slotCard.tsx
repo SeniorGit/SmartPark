@@ -1,6 +1,4 @@
-'use client';
-
-import { Slot } from '@/types/building';
+import { Slot } from '@/types/floorNslot';
 import styles from '../style/slots.module.css';
 
 interface SlotCardProps {
@@ -9,6 +7,7 @@ interface SlotCardProps {
   isUpdating?: boolean;
 }
 
+// slot card will change when it clicked
 export default function SlotCard({ slot, onStatusChange, isUpdating = false }: SlotCardProps) {
   const handleClick = () => {
     if (!isUpdating) {
